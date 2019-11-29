@@ -1,0 +1,18 @@
+diff -up OpenBLAS-0.3.2/Makefile.tests OpenBLAS-0.3.2/Makefile
+--- OpenBLAS-0.3.2/Makefile.tests	2018-08-02 14:12:01.615117002 +0200
++++ OpenBLAS-0.3.2/Makefile	2018-08-02 14:13:29.582918971 +0200
+@@ -122,11 +122,11 @@ tests :
+ ifeq ($(NOFORTRAN), $(filter 0,$(NOFORTRAN)))
+ 	touch $(LIBNAME)
+ ifndef NO_FBLAS
+-	$(MAKE) -C test all
+-	$(MAKE) -C utest all
++	$(MAKE) -C test FC="$(FC)" CC="$(CC)" COMMON_OPT="$(COMMON_OPT)" FCOMMON_OPT="$(FCOMMON_OPT)" all
++	$(MAKE) -C utest FC="$(FC)" CC="$(CC)" COMMON_OPT="$(COMMON_OPT)" FCOMMON_OPT="$(FCOMMON_OPT)" all
+ endif
+ ifndef NO_CBLAS
+-	$(MAKE) -C ctest all
++	$(MAKE) -C ctest FC="$(FC)" CC="$(CC)" COMMON_OPT="$(COMMON_OPT)" FCOMMON_OPT="$(FCOMMON_OPT)" all
+ endif
+ endif
+ 
