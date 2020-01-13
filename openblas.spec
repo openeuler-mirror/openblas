@@ -170,7 +170,6 @@ TARGET="TARGET=ARMV8 DYNAMIC_ARCH=0"
 
 COMMON="%{optflags} -fPIC"
 FCOMMON="%{optflags} -fPIC -frecursive"
-# Use Fedora linker flags
 export LDFLAGS="%{__global_ldflags}"
 
 make -C Rblas      $TARGET USE_THREAD=0 USEOPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libRblas" LIBSONAME="libRblas.so" $AVX $LAPACKE INTERFACE64=0
