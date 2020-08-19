@@ -1,0 +1,17 @@
+name: openblas
+old_version: 0.3.9
+new_version: 0.3.10
+interface_differences:
+- type: 'feature'
+  item: ARMV8架构
+  diff: 为Cortex A53添加了优化的SGEMM内核
+  influence: 功能增强，无影响
+- type: 'feature'
+  item: MIPS架构
+  diff: 增加了对基于P5600内核的MIPS 24K/24KE系列的支持
+  influence: 功能增强，无影响
+- type: 'ABI'
+  item: 新增openblas_setaffinity
+  diff: 在Linux上设置线程关联
+  influence: 功能增强，无影响
+remark: '对用户的使用，没有变更，无影响'

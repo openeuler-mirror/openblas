@@ -1,17 +1,15 @@
 %bcond_with system_lapack
 
 Name:           openblas
-Version:        0.3.3
-Release:        3
+Version:        0.3.10
+Release:        1
 Summary:        An optimized BLAS library based on GotoBLAS2 1.13 BSD version
 License:        BSD
 URL:            https://github.com/xianyi/OpenBLAS/
 Source0:        https://github.com/xianyi/OpenBLAS/archive/v%{version}/openblas-%{version}.tar.gz
 Patch0000:      openblas-0.2.15-system_lapack.patch
 Patch0001:      openblas-0.2.5-libname.patch
-Patch0002:      openblas-0.2.15-constructor.patch
-Patch0003:      openblas-0.3.2-tests.patch
-Patch0004:      openblas-0.3.3-tls.patch
+Patch0002:      openblas-0.3.7-tests.patch
 Requires:       %{name}-devel = %{version}-%{release}
 BuildRequires:  gcc gcc-gfortran perl-devel
 
@@ -58,8 +56,7 @@ cd OpenBLAS-%{version}
 %patch0000 -p1 -b .system_lapack
 %endif
 %patch0001 -p1 -b .libname
-%patch0003 -p1 -b .tests
-%patch0004 -p1 -b .tls
+%patch0002 -p1 -b .tests
 
 # Set source permissions
 find -name \*.f -exec chmod 644 {} \;
@@ -154,6 +151,7 @@ rm -rf netliblapack64
 %endif
 
 %build
+%define _lto_cflags %{nil}
 %if !%{lapacke}
 LAPACKE="NO_LAPACKE=1"
 %endif
@@ -172,36 +170,36 @@ COMMON="%{optflags} -fPIC"
 FCOMMON="%{optflags} -fPIC -frecursive"
 export LDFLAGS="%{__global_ldflags}"
 
-make -C Rblas      $TARGET USE_THREAD=0 USEOPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libRblas" LIBSONAME="libRblas.so" $AVX $LAPACKE INTERFACE64=0
+make -C Rblas      $TARGET USE_THREAD=0 USE_LOCKING=1 USE_OPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libRblas" LIBSONAME="libRblas.so" $AVX $LAPACKE INTERFACE64=0
 
 # Declare some necessary build flags
 COMMON="%{optflags} -fPIC"
 FCOMMON="$COMMON -frecursive"
-make -C serial     $TARGET USE_THREAD=0 USE_OPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblas"      $AVX $LAPACKE INTERFACE64=0
+make -C serial     $TARGET USE_THREAD=0 USE_LOCKING=1 USE_OPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblas"      $AVX $LAPACKE INTERFACE64=0
 make -C threaded   $TARGET USE_THREAD=1 USE_OPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblasp"     $AVX $LAPACKE INTERFACE64=0
 
 # USE_THREAD determines use of SMP, not of pthreads
 COMMON="%{optflags} -fPIC -fopenmp -pthread"
 FCOMMON="$COMMON -frecursive"
-make -C openmp     $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso"     $AVX $LAPACKE INTERFACE64=0
+make -C openmp     $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso"     $AVX $LAPACKE INTERFACE64=0 %{with cpp_thread_check:CPP_THREAD_SAFETY_TEST=1}
 
 COMMON="%{optflags} -fPIC"
 FCOMMON="$COMMON -frecursive -fdefault-integer-8"
-make -C serial64   $TARGET USE_THREAD=0 USE_OPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblas64"    $AVX $LAPACKE INTERFACE64=1
+make -C serial64   $TARGET USE_THREAD=0 USE_LOCKING=1 USE_OPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblas64"    $AVX $LAPACKE INTERFACE64=1
 make -C threaded64 $TARGET USE_THREAD=1 USE_OPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblasp64"   $AVX $LAPACKE INTERFACE64=1
 
 COMMON="%{optflags} -fPIC -fopenmp -pthread"
 FCOMMON="$COMMON -frecursive -fdefault-integer-8"
-make -C openmp64   $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso64"   $AVX $LAPACKE INTERFACE64=1
+make -C openmp64   $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso64"   $AVX $LAPACKE INTERFACE64=1 CPP_THREAD_SAFETY_TEST=1
 
 COMMON="%{optflags} -fPIC"
 FCOMMON="$COMMON -frecursive  -fdefault-integer-8"
-make -C serial64_   $TARGET USE_THREAD=0 USE_OPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblas64_"  $AVX $LAPACKE INTERFACE64=1 SYMBOLSUFFIX=64_
+make -C serial64_   $TARGET USE_THREAD=0 USE_LOCKING=1 USE_OPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblas64_"  $AVX $LAPACKE INTERFACE64=1 SYMBOLSUFFIX=64_
 make -C threaded64_ $TARGET USE_THREAD=1 USE_OPENMP=0 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblasp64_" $AVX $LAPACKE INTERFACE64=1 SYMBOLSUFFIX=64_
 
 COMMON="%{optflags} -fPIC -fopenmp -pthread"
 FCOMMON="$COMMON -frecursive -fdefault-integer-8"
-make -C openmp64_   $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso64_" $AVX $LAPACKE INTERFACE64=1 SYMBOLSUFFIX=64_
+make -C openmp64_   $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso64_" $AVX $LAPACKE INTERFACE64=1 SYMBOLSUFFIX=64_ CPP_THREAD_SAFETY_TEST=1
 
 %install
 rm -rf %{buildroot}
@@ -355,5 +353,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig
 %{_libdir}/lib%{name}*64_.so
 
 %changelog
+* Tue Aug 18 2020 xinghe <xinghe1@huawei.com> - 0.3.10-1
+- Upgrade to 0.3.10
+
 * Wed Nov 13 2019 Alex Chao <zhaolei746@huawei.com> - 0.3.3-3
 - Package init
