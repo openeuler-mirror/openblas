@@ -10,7 +10,7 @@ diff -up OpenBLAS-0.3.7/Makefile.tests OpenBLAS-0.3.7/Makefile
  endif
 -	$(MAKE) -C utest all
 +	$(MAKE) -C utest FC="$(FC)" CC="$(CC)" COMMON_OPT="$(COMMON_OPT)" FCOMMON_OPT="$(FCOMMON_OPT)" all
- ifndef NO_CBLAS
+ ifneq ($(NO_CBLAS), 1)
 -	$(MAKE) -C ctest all
 +	$(MAKE) -C ctest FC="$(FC)" CC="$(CC)" COMMON_OPT="$(COMMON_OPT)" FCOMMON_OPT="$(FCOMMON_OPT)" all
  ifeq ($(CPP_THREAD_SAFETY_TEST), 1)

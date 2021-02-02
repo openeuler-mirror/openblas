@@ -1,7 +1,7 @@
 %bcond_with system_lapack
 
 Name:           openblas
-Version:        0.3.10
+Version:        0.3.13
 Release:        1
 Summary:        An optimized BLAS library based on GotoBLAS2 1.13 BSD version
 License:        BSD
@@ -18,7 +18,7 @@ BuildRequires:  lapack-static lapack64-static
 %global lapacke 0
 %else
 %global lapacke 1
-Provides:       bundled(lapack) = 3.8.0
+Provides:       bundled(lapack) = 3.9.0
 %endif
 
 Provides:       openblas-serial = %{version}-%{release} openblas-openmp = %{version}-%{release}
@@ -163,7 +163,7 @@ NMAX="NUM_THREADS=128"
 TARGET="TARGET=CORE2 DYNAMIC_ARCH=1 DYNAMIC_OLDER=1"
 %endif
 %ifarch aarch64
-TARGET="TARGET=ARMV8 DYNAMIC_ARCH=0"
+TARGET="TARGET=ARMV8 DYNAMIC_ARCH=1 DYNAMIC_OLDER=1"
 %endif
 
 COMMON="%{optflags} -fPIC"
@@ -212,9 +212,6 @@ cp -a %{_includedir}/lapacke %{buildroot}%{_includedir}/%{name}
 %endif
 
 # Fix name of libraries
-%ifarch aarch64
-suffix="_armv8"
-%endif
 slibname=`basename %{buildroot}%{_libdir}/libopenblas${suffix}-*.so .so`
 mv %{buildroot}%{_libdir}/${slibname}.a %{buildroot}%{_libdir}/lib%{name}.a
 if [[ "$suffix" != "" ]]; then
@@ -353,6 +350,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig
 %{_libdir}/lib%{name}*64_.so
 
 %changelog
+* Mon Feb 1 2021 xinghe <xinghe1@huawei.com> - 0.3.13-1
+- Upgrade to 0.3.13
+
 * Tue Aug 18 2020 xinghe <xinghe1@huawei.com> - 0.3.10-1
 - Upgrade to 0.3.10
 
