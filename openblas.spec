@@ -2,7 +2,7 @@
 
 Name:           openblas
 Version:        0.3.13
-Release:        1
+Release:        2
 Summary:        An optimized BLAS library based on GotoBLAS2 1.13 BSD version
 License:        BSD
 URL:            https://github.com/xianyi/OpenBLAS/
@@ -11,7 +11,7 @@ Patch0000:      openblas-0.2.15-system_lapack.patch
 Patch0001:      openblas-0.2.5-libname.patch
 Patch0002:      openblas-0.3.7-tests.patch
 Requires:       %{name}-devel = %{version}-%{release}
-BuildRequires:  gcc gcc-gfortran perl-devel
+BuildRequires:  gcc gcc-gfortran perl-devel gcc-c++
 
 %if %{with system_lapack}
 BuildRequires:  lapack-static lapack64-static
@@ -350,6 +350,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig
 %{_libdir}/lib%{name}*64_.so
 
 %changelog
+* Wed Jun 30 2021 zhouwenpei <zhouwenpei1@huawei.com> -0.3.13-2
+- add buildrequire gcc-c++
+
 * Mon Feb 1 2021 xinghe <xinghe1@huawei.com> - 0.3.13-1
 - Upgrade to 0.3.13
 
