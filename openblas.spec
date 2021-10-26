@@ -2,7 +2,7 @@
 
 Name:           openblas
 Version:        0.3.13
-Release:        2
+Release:        3
 Summary:        An optimized BLAS library based on GotoBLAS2 1.13 BSD version
 License:        BSD
 URL:            https://github.com/xianyi/OpenBLAS/
@@ -181,7 +181,7 @@ FCOMMON="$COMMON -frecursive"
 # USE_THREAD determines use of SMP, not of pthreads
 COMMON="%{optflags} -fPIC -fopenmp -pthread"
 FCOMMON="$COMMON -frecursive"
-(make -C openmp     $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso"     $AVX $LAPACKE INTERFACE64=0 %{with cpp_thread_check:CPP_THREAD_SAFETY_TEST=1})&
+(make -C openmp     $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso"     $AVX $LAPACKE INTERFACE64=0 %{with cpp_thread_check:CPP_THREAD_SAFETY_TEST=0})&
 
 COMMON="%{optflags} -fPIC"
 FCOMMON="$COMMON -frecursive -fdefault-integer-8"
@@ -190,7 +190,7 @@ FCOMMON="$COMMON -frecursive -fdefault-integer-8"
 
 COMMON="%{optflags} -fPIC -fopenmp -pthread"
 FCOMMON="$COMMON -frecursive -fdefault-integer-8"
-(make -C openmp64   $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso64"   $AVX $LAPACKE INTERFACE64=1 CPP_THREAD_SAFETY_TEST=1)&
+(make -C openmp64   $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso64"   $AVX $LAPACKE INTERFACE64=1 CPP_THREAD_SAFETY_TEST=0)&
 
 COMMON="%{optflags} -fPIC"
 FCOMMON="$COMMON -frecursive  -fdefault-integer-8"
@@ -199,7 +199,7 @@ FCOMMON="$COMMON -frecursive  -fdefault-integer-8"
 
 COMMON="%{optflags} -fPIC -fopenmp -pthread"
 FCOMMON="$COMMON -frecursive -fdefault-integer-8"
-(make -C openmp64_   $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso64_" $AVX $LAPACKE INTERFACE64=1 SYMBOLSUFFIX=64_ CPP_THREAD_SAFETY_TEST=1)&
+(make -C openmp64_   $TARGET USE_THREAD=1 USE_OPENMP=1 FC=gfortran CC=gcc COMMON_OPT="$COMMON" FCOMMON_OPT="$FCOMMON" $NMAX LIBPREFIX="libopenblaso64_" $AVX $LAPACKE INTERFACE64=1 SYMBOLSUFFIX=64_ CPP_THREAD_SAFETY_TEST=0)&
 wait
 
 %install
@@ -351,6 +351,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig
 %{_libdir}/lib%{name}*64_.so
 
 %changelog
+* Fri Oct 15 2021 zhangweiguo <zhangweiguo2@huawei.com> -0.3.13-3
+- Disable CPP_THREAD_SAFETY_TEST
+
 * Thu Oct 14 2021 zhangweiguo <zhangweiguo2@huawei.com> -0.3.13-3
 - parallelize compilation targets
 
