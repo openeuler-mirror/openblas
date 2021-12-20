@@ -2,7 +2,7 @@
 
 Name:           openblas
 Version:        0.3.13
-Release:        3
+Release:        4
 Summary:        An optimized BLAS library based on GotoBLAS2 1.13 BSD version
 License:        BSD
 URL:            https://github.com/xianyi/OpenBLAS/
@@ -10,6 +10,10 @@ Source0:        https://github.com/xianyi/OpenBLAS/archive/v%{version}/openblas-
 Patch0000:      openblas-0.2.15-system_lapack.patch
 Patch0001:      openblas-0.2.5-libname.patch
 Patch0002:      openblas-0.3.7-tests.patch
+Patch0003:	CVE-2021-4048-1.patch
+Patch0004:	CVE-2021-4048-2.patch
+Patch0005:	CVE-2021-4048-3.patch
+Patch0006:	CVE-2021-4048-4.patch
 Requires:       %{name}-devel = %{version}-%{release}
 BuildRequires:  gcc gcc-gfortran perl-devel gcc-c++
 
@@ -57,6 +61,10 @@ cd OpenBLAS-%{version}
 %endif
 %patch0001 -p1 -b .libname
 %patch0002 -p1 -b .tests
+%patch0003 -p1
+%patch0004 -p1
+%patch0005 -p1
+%patch0006 -p1
 
 # Set source permissions
 find -name \*.f -exec chmod 644 {} \;
@@ -351,6 +359,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig
 %{_libdir}/lib%{name}*64_.so
 
 %changelog
+* Mon Dec 20 2021 houyingchao <houyingchao@huawei.com>- 0.3.13-4
+- Fix CVE-2021-4048
+
 * Fri Oct 15 2021 zhangweiguo <zhangweiguo2@huawei.com> -0.3.13-3
 - Disable CPP_THREAD_SAFETY_TEST
 
