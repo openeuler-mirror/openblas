@@ -2,7 +2,7 @@
 
 Name:           openblas
 Version:        0.3.18
-Release:        1
+Release:        2
 Summary:        An optimized BLAS library based on GotoBLAS2 1.13 BSD version
 License:        BSD
 URL:            https://github.com/xianyi/OpenBLAS/
@@ -34,7 +34,7 @@ Obsoletes:      openblas-serial64_ < %{version}-%{release} openblas-openmp64_ < 
 Obsoletes:      openblas-threads64_ < %{version}-%{release} openblas-Rblas < %{version}-%{release}
 Obsoletes:      openblas-static < %{version}-%{release}
 
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  x86_64 aarch64 riscv64
 
 %description
 OpenBLAS is an optimized BLAS library based on GotoBLAS2 1.13 BSD \
@@ -165,6 +165,9 @@ TARGET="TARGET=CORE2 DYNAMIC_ARCH=1 DYNAMIC_OLDER=1"
 %ifarch aarch64
 TARGET="TARGET=ARMV8 DYNAMIC_ARCH=1 DYNAMIC_OLDER=1"
 %endif
+%ifarch riscv64
+TARGET="TARGET=RISCV64_GENERIC DYNAMIC_ARCH=0"
+%endif
 
 COMMON="%{optflags} -fPIC"
 FCOMMON="%{optflags} -fPIC -frecursive"
@@ -205,7 +208,7 @@ wait
 %install
 rm -rf %{buildroot}
 # Install serial library and headers
-make -C serial USE_THREAD=0 PREFIX=%{buildroot} OPENBLAS_LIBRARY_DIR=%{buildroot}%{_libdir} OPENBLAS_INCLUDE_DIR=%{buildroot}%{_includedir}/%name OPENBLAS_BINARY_DIR=%{buildroot}%{_bindir} OPENBLAS_CMAKE_DIR=%{buildroot}%{_libdir}/cmake install
+make -C serial $TARGET USE_THREAD=0 PREFIX=%{buildroot} OPENBLAS_LIBRARY_DIR=%{buildroot}%{_libdir} OPENBLAS_INCLUDE_DIR=%{buildroot}%{_includedir}/%name OPENBLAS_BINARY_DIR=%{buildroot}%{_bindir} OPENBLAS_CMAKE_DIR=%{buildroot}%{_libdir}/cmake install
 
 # Copy lapacke include files
 %if %{with system_lapack} && %{lapacke}
@@ -213,6 +216,9 @@ cp -a %{_includedir}/lapacke %{buildroot}%{_includedir}/%{name}
 %endif
 
 # Fix name of libraries
+%ifarch riscv64
+suffix="_riscv64_generic"
+%endif
 slibname=`basename %{buildroot}%{_libdir}/libopenblas${suffix}-*.so .so`
 mv %{buildroot}%{_libdir}/${slibname}.a %{buildroot}%{_libdir}/lib%{name}.a
 if [[ "$suffix" != "" ]]; then
@@ -351,6 +357,10 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig
 %{_libdir}/lib%{name}*64_.so
 
 %changelog
+* Mon Mar 28 2022 xiaoqianlv <xiaoqian@nj.iscas.ac.cn>- 0.3.18-2
+- add support for riscv
+- fix build failure: add TARGET to make in install from laokz
+
 * Mon Dec 27 2021 zhouwenpei <zhouwenpei1@huawei.com>- 0.3.18-1
 - Upgrade to 0.3.18
 
